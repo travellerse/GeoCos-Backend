@@ -7,15 +7,17 @@ env:
 
 on:
   pull_request:
-    branches: ['main']
-    paths-ignore: ['docs/**']
+    branches: ["dev"]
+    paths-ignore: ["docs/**"]
 
   push:
-    branches: ['main']
-    paths-ignore: ['docs/**']
+    branches-ignore:
+      - "main"
+    paths-ignore: ["docs/**"]
+  workflow_dispatch:
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
