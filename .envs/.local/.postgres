@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=geocos_backend
+POSTGRES_USER=EBxvvGdXWHWvBJzyRwEPSvcgioVAerpG
+POSTGRES_PASSWORD=UjP50W9XVxzYGFQCfiib2vBlfDv37YV5jIidGmG8zevIo7YX6uQ6H7fFf6t0dr3w
