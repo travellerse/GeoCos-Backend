@@ -278,3 +278,6 @@ webpack-stats.json
 .env
 .envs/*
 !.envs/.local/
+
+# sqlite database
+db.sqlite3

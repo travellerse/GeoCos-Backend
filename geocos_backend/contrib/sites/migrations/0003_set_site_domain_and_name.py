@@ -3,6 +3,7 @@ To understand why this file is here, please read:
 
 https://cookiecutter-django.readthedocs.io/en/latest/5-help/faq.html#why-is-there-a-django-contrib-sites-directory-in-cookiecutter-django
 """
+
 from django.conf import settings
 from django.db import migrations
 
@@ -24,6 +25,12 @@ def _update_or_create_site_with_sequence(site_model, connection, domain, name):
         # To avoid this, we need to manually update DB sequence and make sure it's
         # greater than the maximum value.
         max_id = site_model.objects.order_by("-id").first().id
+        # Only update the DB sequence on backends that support sequences (PostgreSQL).
+        # SQLite doesn't have sequences and will raise OperationalError if we try to
+        # query/alter them, so skip sequence management there.
+        if connection.vendor != "postgresql":
+            return
+
         with connection.cursor() as cursor:
             cursor.execute("SELECT last_value from django_site_id_seq")
             (current_id,) = cursor.fetchone()
