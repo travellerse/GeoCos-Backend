@@ -10,10 +10,7 @@ module.exports = {
     vendors: path.resolve(__dirname, '../geocos_backend/static/js/vendors'),
   },
   output: {
-    path: path.resolve(
-      __dirname,
-      '../geocos_backend/static/webpack_bundles/',
-    ),
+    path: path.resolve(__dirname, '../geocos_backend/static/webpack_bundles/'),
     publicPath: '/static/webpack_bundles/',
     filename: 'js/[name]-[fullhash].js',
     chunkFilename: 'js/[name]-[hash].js',
