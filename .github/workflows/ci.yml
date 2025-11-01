@@ -7,13 +7,13 @@ env:
 
 on:
   pull_request:
-    branches: ["dev"]
-    paths-ignore: ["docs/**"]
+    branches: ['dev']
+    paths-ignore: ['docs/**']
 
   push:
     branches-ignore:
-      - "main"
-    paths-ignore: ["docs/**"]
+      - 'main'
+    paths-ignore: ['docs/**']
   workflow_dispatch:
 
 concurrency:
