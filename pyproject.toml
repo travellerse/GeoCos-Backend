@@ -2,15 +2,47 @@
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--ds=config.settings.test --reuse-db --import-mode=importlib"
-python_files = [
-    "tests.py",
-    "test_*.py",
+python_files = ["tests.py", "test_*.py"]
+norecursedirs = [
+    "static",
+    "staticfiles",
+    "node_modules",
+    "venv",
+    ".venv",
+    "env",
+    "build",
+    "dist",
+    "docs",
+    "compose",
+    "docker",
+    "locale",
+    "__pycache__",
 ]
+
+testpaths = ["tests", "users", "geocos_backend"]
 
 # ==== Coverage ====
 [tool.coverage.run]
 include = ["geocos_backend/**"]
-omit = ["*/migrations/*", "*/tests/*"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    # local virtualenvs
+    "**/.venv/**",
+    "**/venv/**",
+    "**/env/**",
+    ".venv/**",
+    "venv/**",
+    # site-packages / installed distributions
+    "**/site-packages/**",
+    "**/*dist-info/**",
+    # node / frontend dependencies
+    "**/node_modules/**",
+    "node_modules/**",
+    # built/static assets
+    "**/static/**",
+    "staticfiles/**",
+]
 plugins = ["django_coverage_plugin"]
 
 # ==== mypy ====
@@ -21,10 +53,7 @@ ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 warn_unused_configs = true
-plugins = [
-    "mypy_django_plugin.main",
-    "mypy_drf_plugin.main",
-]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 
 [[tool.mypy.overrides]]
 # Django migrations should not produce any errors:
@@ -55,10 +84,7 @@ indent_size = 2
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
-extend-exclude = [
-    "*/migrations/*.py",
-    "staticfiles/*",
-]
+extend-exclude = ["*/migrations/*.py", "staticfiles/*"]
 
 [tool.ruff.lint]
 select = [
@@ -118,7 +144,7 @@ select = [
     "RUF",
 ]
 ignore = [
-    "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
+    "S101",   # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
     "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
     "SIM102", # sometimes it's better to nest
     # of types for comparison.
@@ -160,9 +186,7 @@ description = "Behold My Awesome Project!"
 readme = "README.md"
 
 license = { text = "MIT" }
-authors = [
-  { name = "Grid Group", email = "grid-group@example.com" },
-]
+authors = [{ name = "Grid Group", email = "grid-group@example.com" }]
 requires-python = "==3.13.*"
 dependencies = [
     "argon2-cffi==25.1.0",
@@ -185,6 +209,7 @@ dependencies = [
     "hiredis==3.3.0",
     "pillow==12.0.0",
     "psycopg[c]==3.2.12",
+    "pytest-cov>=7.0.0",
     "python-slugify==8.0.4",
     "redis==7.0.1",
     "sentry-sdk==2.43.0",
