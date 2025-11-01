@@ -8,12 +8,47 @@ env:
 on:
   pull_request:
     branches: ['dev']
-    paths-ignore: ['docs/**']
-
+    paths:
+      - '.github/workflows/**'
+      - 'docker-compose.local.yml'
+      - 'docker-compose.docs.yml'
+      - 'docker-compose.*.yml'
+      - 'compose/local/**'
+      - 'compose/production/**'
+      - 'compose/**/Dockerfile'
+      - 'compose/**/start'
+      - 'config/**'
+      - 'manage.py'
+      - 'pyproject.toml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'webpack/**'
+      - 'webpack/*.js'
+      - 'geocos_backend/**/*.py'
+      - 'users/**/*.py'
+      - 'tests/**'
   push:
     branches-ignore:
       - 'main'
-    paths-ignore: ['docs/**']
+    paths:
+      - '.github/workflows/**'
+      - 'docker-compose.local.yml'
+      - 'docker-compose.docs.yml'
+      - 'docker-compose.*.yml'
+      - 'compose/local/**'
+      - 'compose/production/**'
+      - 'compose/**/Dockerfile'
+      - 'compose/**/start'
+      - 'config/**'
+      - 'manage.py'
+      - 'pyproject.toml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'webpack/**'
+      - 'webpack/*.js'
+      - 'geocos_backend/**/*.py'
+      - 'users/**/*.py'
+      - 'tests/**'
   workflow_dispatch:
 
 concurrency:
