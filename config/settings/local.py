@@ -1,8 +1,5 @@
 from .base import *  # noqa: F403
-from .base import INSTALLED_APPS
-from .base import MIDDLEWARE
-from .base import WEBPACK_LOADER
-from .base import env
+from .base import INSTALLED_APPS, MIDDLEWARE, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -64,12 +61,6 @@ if USE_DOCKER:
 
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [".".join([*ip.split(".")[:-1], "1"]) for ip in ips]
-    try:
-        _, _, ips = socket.gethostbyname_ex("node")
-        INTERNAL_IPS.extend(ips)
-    except socket.gaierror:
-        # The node container isn't started (yet?)
-        pass
     # RunServerPlus
     # ------------------------------------------------------------------------------
     # Custom setting for RunServerPlus to fix reloader issues in Windows
@@ -88,8 +79,5 @@ INSTALLED_APPS += ["django_extensions"]
 
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
-# django-webpack-loader
-# ------------------------------------------------------------------------------
-WEBPACK_LOADER["DEFAULT"]["CACHE"] = not DEBUG
 # Your stuff...
 # ------------------------------------------------------------------------------

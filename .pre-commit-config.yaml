@@ -27,21 +27,33 @@ repos:
       - id: django-upgrade
         args: ["--target-version", "5.2"]
 
-  # Run the Ruff linter.
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.3
+  # (Ruff removed; using Black for formatting and pre-commit hooks already include black)
+
+  - repo: https://github.com/psf/black
+    rev: 25.9.0
     hooks:
-      # Linter
-      - id: ruff-check
-        args: [--fix, --exit-non-zero-on-fix]
-      # Formatter
-      - id: ruff-format
+      - id: black
+        files: \.py$
 
   - repo: https://github.com/Riverside-Healthcare/djLint
     rev: v1.36.4
     hooks:
       - id: djlint-reformat-django
       - id: djlint-django
+
+  # isort for import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        name: Isort (Python)
+        args: ["--profile", "black", "--filter-files"]
+  - repo: https://github.com/shssoichiro/oxipng
+    rev: v9.1.5
+    hooks:
+      - id: oxipng
+        name: Image Compression
+        args: ["-q", "-o", "2", "-s", "--ng"]
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 default_install_hook_types: [pre-commit, prepare-commit-msg]

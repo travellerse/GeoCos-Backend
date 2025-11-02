@@ -1,4 +1,4 @@
-# ruff: noqa: ERA001, PTH100
+# noqa: ERA001, PTH100
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full

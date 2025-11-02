@@ -13,5 +13,5 @@ services:
       - ./config:/app/config:z
       - ./geocos_backend:/app/geocos_backend:z
     ports:
-      - '9000:9000'
+      - "9000:9000"
     command: /start-docs
