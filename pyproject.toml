@@ -185,7 +185,7 @@ version = "0.1.0"
 description = "Behold My Awesome Project!"
 readme = "README.md"
 
-license = { text = "MIT" }
+license = { text = "AGPLv3" }
 authors = [{ name = "Grid Group", email = "grid-group@example.com" }]
 requires-python = "==3.13.*"
 dependencies = [
