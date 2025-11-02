@@ -3,9 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView
-from django.views.generic import RedirectView
-from django.views.generic import UpdateView
+from django.views.generic import DetailView, RedirectView, UpdateView
 
 from geocos_backend.users.models import User
 
