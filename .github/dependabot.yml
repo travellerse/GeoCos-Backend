@@ -4,68 +4,73 @@
 version: 2
 updates:
   # Update GitHub actions in workflows
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     # Every weekday
     schedule:
-      interval: 'daily'
+      interval: "daily"
     groups:
       github-actions:
         patterns:
-          - '*'
+          - "*"
 
   # Enable version updates for Docker
-  - package-ecosystem: 'docker'
+  - package-ecosystem: "docker"
     # Look for a `Dockerfile` in the `compose/local/django` directory
     directories:
-      - 'compose/local/django/'
-      - 'compose/local/docs/'
-      - 'compose/production/django/'
+      - "compose/local/django/"
+      - "compose/local/docs/"
+      - "compose/production/django/"
     # Every weekday
     schedule:
-      interval: 'daily'
+      interval: "daily"
     # Ignore minor version updates (3.10 -> 3.11) but update patch versions
     ignore:
-      - dependency-name: '*'
+      - dependency-name: "*"
         update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
     groups:
       docker-python:
         patterns:
-          - '*'
+          - "*"
 
-
-  - package-ecosystem: 'docker'
+  - package-ecosystem: "docker"
     # Look for a `Dockerfile` in the listed directories
     directories:
-      - 'compose/local/node/'
-      - 'compose/production/aws/'
-      - 'compose/production/postgres/'
-      - 'compose/production/traefik/'
-      - 'compose/production/nginx/'
+      - "compose/local/node/"
+      - "compose/production/aws/"
+      - "compose/production/postgres/"
+      - "compose/production/traefik/"
+      - "compose/production/nginx/"
     # Every weekday
     schedule:
-      interval: 'daily'
+      interval: "daily"
 
   # Enable version updates for Docker Compose files
-  - package-ecosystem: 'docker-compose'
+  - package-ecosystem: "docker-compose"
     directories:
-      - '/'
+      - "/"
     # Every weekday
     schedule:
-      interval: 'daily'
+      interval: "daily"
 
   # Enable version updates for Python/Pip - Production
-  - package-ecosystem: 'pip'
-    # Look for a `requirements.txt` in the `root` directory
-    # also 'setup.cfg', '.python-version' and 'requirements/*.txt'
-    directory: '/'
-    # Every weekday
+  # - package-ecosystem: 'pip'
+  #   # Look for a `requirements.txt` in the `root` directory
+  #   # also 'setup.cfg', '.python-version' and 'requirements/*.txt'
+  #   directory: '/'
+  #   # Every weekday
+  #   schedule:
+  #     interval: 'daily'
+  #   groups:
+  #     python:
+  #       update-types:
+  #         - 'minor'
+  #         - 'patch'
+
+  - package-ecosystem: "uv"
+    directories:
+      - "/"
     schedule:
-      interval: 'daily'
-    groups:
-      python:
-        update-types:
-          - 'minor'
-          - 'patch'
+      interval: "daily"
