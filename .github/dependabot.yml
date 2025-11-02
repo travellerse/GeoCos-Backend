@@ -31,9 +31,7 @@ updates:
           - "version-update:semver-major"
           - "version-update:semver-minor"
       - dependency-name: "postgres"
-        # prevent Dependabot from proposing updates that match 18.*
-        versions:
-          - "18.*"
+        # prevent Dependabot from proposing updates that match major version 18
     groups:
       docker-python:
         patterns:
@@ -53,8 +51,6 @@ updates:
     # Explicitly ignore Postgres 18 for docker images in these directories
     ignore:
       - dependency-name: "postgres"
-        versions:
-          - "18.*"
 
   # Enable version updates for Docker Compose files
   - package-ecosystem: "docker-compose"
@@ -66,8 +62,6 @@ updates:
     # Ignore Postgres 18 in docker-compose updates
     ignore:
       - dependency-name: "postgres"
-        versions:
-          - "18.*"
 
   # Enable version updates for Python/Pip - Production
   # - package-ecosystem: 'pip'
