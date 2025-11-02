@@ -35,6 +35,7 @@ updates:
         patterns:
           - '*'
 
+
   - package-ecosystem: 'docker'
     # Look for a `Dockerfile` in the listed directories
     directories:
