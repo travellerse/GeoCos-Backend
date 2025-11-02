@@ -43,6 +43,14 @@ repos:
       - id: djlint-reformat-django
       - id: djlint-django
 
+  # isort for import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        name: Isort (Python)
+        args: ["--profile", "black", "--filter-files"]
+
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 default_install_hook_types: [pre-commit, prepare-commit-msg]
 ci:
