@@ -34,7 +34,7 @@
           "editor.codeActionsOnSave": {
             "source.organizeImports": "always"
           },
-          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.defaultFormatter": "ms-python.black-formatter",
           "languageServer": "Pylance",
           "linting.enabled": true,
           "linting.mypyEnabled": true,
@@ -51,7 +51,7 @@
         // python
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "charliermarsh.ruff",
+        "ms-python.black-formatter",
         // django
         "batisteo.vscode-django"
       ]
