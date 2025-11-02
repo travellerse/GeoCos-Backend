@@ -1,7 +1,6 @@
 from .base import *  # noqa: F403
 from .base import INSTALLED_APPS
 from .base import MIDDLEWARE
-from .base import WEBPACK_LOADER
 from .base import env
 
 # GENERAL
@@ -88,8 +87,5 @@ INSTALLED_APPS += ["django_extensions"]
 
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
-# django-webpack-loader
-# ------------------------------------------------------------------------------
-WEBPACK_LOADER["DEFAULT"]["CACHE"] = not DEBUG
 # Your stuff...
 # ------------------------------------------------------------------------------

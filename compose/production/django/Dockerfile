@@ -1,12 +1,4 @@
-FROM docker.io/node:24.11-bookworm-slim AS client-builder
 
-ARG APP_HOME=/app
-WORKDIR ${APP_HOME}
-
-COPY ./package.json ${APP_HOME}
-RUN npm install && npm cache clean --force
-COPY . ${APP_HOME}
-RUN npm run build
 # define an alias for the specific python version used in this file.
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS python-build-stage
 
@@ -29,8 +21,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
-COPY --from=client-builder ${APP_HOME} ${APP_HOME}
-
+COPY . ${APP_HOME}
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
@@ -86,7 +77,7 @@ RUN chmod +x /start-flower
 # Copy the application from the builder
 COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}
 # explicitly create the media folder before changing ownership below
-RUN mkdir -p ${APP_HOME}/geocos_backend/media
+RUN mkdir -p ${APP_HOME}/cosmic_ray_backend/media
 
 # make django owner of the WORKDIR directory as well.
 RUN chown django:django ${APP_HOME}
