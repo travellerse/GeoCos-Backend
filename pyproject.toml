@@ -82,81 +82,17 @@ indent_size = 2
 [tool.djlint.js]
 indent_size = 2
 
-[tool.ruff]
-# Exclude a variety of commonly ignored directories.
-extend-exclude = ["*/migrations/*.py", "staticfiles/*"]
 
-[tool.ruff.lint]
-select = [
-    "F",
-    "E",
-    "W",
-    "C90",
-    "I",
-    "N",
-    "UP",
-    "YTT",
-    # "ANN", # flake8-annotations: we should support this in the future but 100+ errors atm
-    "ASYNC",
-    "S",
-    "BLE",
-    "FBT",
-    "B",
-    "A",
-    "COM",
-    "C4",
-    "DTZ",
-    "T10",
-    "DJ",
-    "EM",
-    "EXE",
-    "FA",
-    'ISC',
-    "ICN",
-    "G",
-    'INP',
-    'PIE',
-    "T20",
-    'PYI',
-    'PT',
-    "Q",
-    "RSE",
-    "RET",
-    "SLF",
-    "SLOT",
-    "SIM",
-    "TID",
-    "TC",
-    "INT",
-    # "ARG", # Unused function argument
-    "PTH",
-    "ERA",
-    "PD",
-    "PGH",
-    "PL",
-    "TRY",
-    "FLY",
-    # "NPY",
-    # "AIR",
-    "PERF",
-    # "FURB",
-    # "LOG",
-    "RUF",
-]
-ignore = [
-    "S101",   # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
-    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-    "SIM102", # sometimes it's better to nest
-    # of types for comparison.
-    # Deactivated because it can make the code slow:
-    # https://github.com/astral-sh/ruff/issues/7871
-]
+[tool.black]
+line-length = 119
+skip-string-normalization = true
 
-[tool.ruff.lint.isort]
-force-single-line = true
+[tool.isort]
+profile = "black"
 
 [dependency-groups]
 dev = [
+    "black>=25.9.0",
     "coverage==7.11.0",
     "django-coverage-plugin==3.2.0",
     "django-debug-toolbar==6.1.0",
@@ -172,7 +108,6 @@ dev = [
     "pytest==8.4.2",
     "pytest-django==4.11.1",
     "pytest-sugar==1.1.1",
-    "ruff==0.14.3",
     "sphinx==8.2.3",
     "sphinx-autobuild==2025.8.25",
     "watchfiles==1.1.1",
@@ -190,6 +125,7 @@ authors = [{ name = "Grid Group", email = "grid-group@example.com" }]
 requires-python = "==3.13.*"
 dependencies = [
     "argon2-cffi==25.1.0",
+    "black>=25.9.0",
     "celery==5.5.3",
     "crispy-bootstrap5==2025.6",
     "django==5.2.7",
@@ -201,7 +137,6 @@ dependencies = [
     "django-environ==0.12.0",
     "django-model-utils==5.0.0",
     "django-redis==6.0.0",
-    "django-webpack-loader==3.2.1",
     "djangorestframework==3.16.1",
     "drf-spectacular==0.28.0",
     "flower==2.0.1",

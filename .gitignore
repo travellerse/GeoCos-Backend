@@ -273,8 +273,6 @@ geocos_backend/media/
 
 .pytest_cache/
 .ipython/
-geocos_backend/static/webpack_bundles/
-webpack-stats.json
 .env
 .envs/*
 !.envs/.local/
