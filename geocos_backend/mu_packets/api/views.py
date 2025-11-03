@@ -34,15 +34,18 @@ class PacketViewSet(GenericViewSet):
         try:
             ingest_packet(validated["device"], records)
             normalized_device = normalize_device_path(validated["device"])
-        except IoTDBWriteError as exc:
+        except IoTDBWriteError:
             logger.exception("IoTDB write failed for device %s", validated["device"])
             return Response(
                 {"detail": "Failed to write data to IoTDB"},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
-        except (IoTDBError, ValueError) as exc:
+        except (IoTDBError, ValueError):
             logger.exception("IoTDB integration error for device %s", validated["device"])
-            return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Error occurred while processing the request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {"device": normalized_device, "records_written": len(records)},
