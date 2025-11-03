@@ -1,6 +1,7 @@
 # noqa: ERA001, E501
 """Base settings to build other settings files upon."""
 
+import os
 import ssl
 from pathlib import Path
 
@@ -92,6 +93,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "geocos_backend.users",
+    "geocos_backend.iotdb",
+    "geocos_backend.mu_packets",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -352,6 +355,48 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
     "SCHEMA_PATH_PREFIX": "/api/",
+}
+
+
+def _env_str(name: str, default: str) -> str:
+    return os.environ.get(name, default)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name)
+    try:
+        return int(raw) if raw is not None else default
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_list(name: str) -> tuple[str, ...]:
+    raw = os.environ.get(name, "")
+    return tuple(filter(None, (segment.strip() for segment in raw.split(","))))
+
+
+IOTDB = {
+    "HOST": _env_str("IOTDB_HOST", "127.0.0.1"),
+    "PORT": _env_int("IOTDB_PORT", 6667),
+    "USERNAME": _env_str("IOTDB_USERNAME", "root"),
+    "PASSWORD": _env_str("IOTDB_PASSWORD", "root"),
+    "FETCH_SIZE": _env_int("IOTDB_FETCH_SIZE", 1024),
+    "ZONE_ID": _env_str("IOTDB_ZONE_ID", "UTC+8"),
+    "MAX_RETRY": _env_int("IOTDB_MAX_RETRY", 3),
+    "POOL_SIZE": _env_int("IOTDB_POOL_SIZE", 5),
+    "POOL_WAIT_TIMEOUT_MS": _env_int("IOTDB_POOL_WAIT_TIMEOUT_MS", 3000),
+    "USE_SSL": _env_bool("IOTDB_USE_SSL", False),
+    "CA_CERTS": _env_str("IOTDB_CA_CERTS", "") or None,
+    "NODE_URLS": _env_list("IOTDB_NODE_URLS"),
+    "ENABLE_REDIRECTION": _env_bool("IOTDB_ENABLE_REDIRECTION", True),
+    "ROOT_PATH": _env_str("IOTDB_ROOT_PATH", "root.geocos"),
 }
 # Your stuff...
 # ------------------------------------------------------------------------------

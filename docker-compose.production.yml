@@ -3,8 +3,8 @@ volumes:
   production_postgres_data_backups: {}
   production_traefik: {}
   production_django_media: {}
-
   production_redis_data: {}
+  production_iotdb_data: {}
 
 services:
   django: &django
@@ -18,6 +18,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - iotdb
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
@@ -33,6 +34,19 @@ services:
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
+
+  iotdb:
+    image: apache/iotdb:2.0.5-standalone
+    container_name: geocos_backend_production_iotdb
+    restart: unless-stopped
+    ports:
+      - "6667:6667"
+      - "18080:18080"
+    environment:
+      IOTDB_USERNAME: ${IOTDB_USERNAME:-root}
+      IOTDB_PASSWORD: ${IOTDB_PASSWORD:-root}
+    volumes:
+      - production_iotdb_data:/iotdb/data
 
   traefik:
     build:
