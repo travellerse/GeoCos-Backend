@@ -2,6 +2,7 @@ volumes:
   geocos_backend_local_postgres_data: {}
   geocos_backend_local_postgres_data_backups: {}
   geocos_backend_local_redis_data: {}
+  geocos_backend_local_iotdb_data: {}
 
 services:
   django: &django
@@ -14,6 +15,7 @@ services:
       - postgres
       - redis
       - mailpit
+      - iotdb
     volumes:
       - /app/.venv
       - .:/app:z
@@ -36,6 +38,18 @@ services:
     env_file:
       - ./.envs/.local/.postgres
 
+  iotdb:
+    image: apache/iotdb:2.0.5-standalone
+    container_name: geocos_backend_local_iotdb
+    ports:
+      - "6667:6667"
+      - "18080:18080"
+    environment:
+      - IOTDB_USERNAME=root
+      - IOTDB_PASSWORD=root
+    volumes:
+      - geocos_backend_local_iotdb_data:/iotdb/data
+
   mailpit:
     image: docker.io/axllent/mailpit:latest
     container_name: geocos_backend_local_mailpit
@@ -56,6 +70,7 @@ services:
       - redis
       - postgres
       - mailpit
+      - iotdb
     ports: []
     command: /start-celeryworker
 
@@ -67,6 +82,7 @@ services:
       - redis
       - postgres
       - mailpit
+      - iotdb
     ports: []
     command: /start-celerybeat
 
