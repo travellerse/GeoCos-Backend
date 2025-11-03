@@ -4,90 +4,90 @@
 # Documentation changes
 documentation:
   - changed-files:
-    - any-glob-to-any-file: 'docs/**/*'
+      - any-glob-to-any-file: "docs/**/*"
   - changed-files:
-    - any-glob-to-any-file: '*.md'
+      - any-glob-to-any-file: "*.md"
   - changed-files:
-    - any-glob-to-any-file: '*.rst'
+      - any-glob-to-any-file: "*.rst"
 
 # Test files
 tests:
   - changed-files:
-    - any-glob-to-any-file: '**/tests/**/*'
+      - any-glob-to-any-file: "**/tests/**/*"
   - changed-files:
-    - any-glob-to-any-file: '**/test_*.py'
+      - any-glob-to-any-file: "**/test_*.py"
   - changed-files:
-    - any-glob-to-any-file: 'tests/**/*'
+      - any-glob-to-any-file: "tests/**/*"
 
 # Docker and deployment
 docker:
   - changed-files:
-    - any-glob-to-any-file: 'compose/**/*'
+      - any-glob-to-any-file: "compose/**/*"
   - changed-files:
-    - any-glob-to-any-file: 'docker-compose*.yml'
+      - any-glob-to-any-file: "docker-compose*.yml"
   - changed-files:
-    - any-glob-to-any-file: '**/Dockerfile'
+      - any-glob-to-any-file: "**/Dockerfile"
   - changed-files:
-    - any-glob-to-any-file: '.dockerignore'
+      - any-glob-to-any-file: ".dockerignore"
 
 # GitHub workflows and CI
 ci:
   - changed-files:
-    - any-glob-to-any-file: '.github/workflows/**/*'
+      - any-glob-to-any-file: ".github/workflows/**/*"
   - changed-files:
-    - any-glob-to-any-file: '.github/actionlint.yaml'
+      - any-glob-to-any-file: ".github/actionlint.yaml"
   - changed-files:
-    - any-glob-to-any-file: '.gitlab-ci.yml'
+      - any-glob-to-any-file: ".gitlab-ci.yml"
 
 # Django app: users
 users:
   - changed-files:
-    - any-glob-to-any-file: 'geocos_backend/users/**/*'
+      - any-glob-to-any-file: "cosray_backend/users/**/*"
 
 # Django app: iotdb
 iotdb:
   - changed-files:
-    - any-glob-to-any-file: 'geocos_backend/iotdb/**/*'
+      - any-glob-to-any-file: "cosray_backend/iotdb/**/*"
 
 # Django app: mu_packets
 mu_packets:
   - changed-files:
-    - any-glob-to-any-file: 'geocos_backend/mu_packets/**/*'
+      - any-glob-to-any-file: "cosray_backend/mu_packets/**/*"
 
 # Configuration files
 config:
   - changed-files:
-    - any-glob-to-any-file: 'config/**/*'
+      - any-glob-to-any-file: "config/**/*"
   - changed-files:
-    - any-glob-to-any-file: '.envs/**/*'
+      - any-glob-to-any-file: ".envs/**/*"
   - changed-files:
-    - any-glob-to-any-file: '.editorconfig'
+      - any-glob-to-any-file: ".editorconfig"
   - changed-files:
-    - any-glob-to-any-file: '.pre-commit-config.yaml'
+      - any-glob-to-any-file: ".pre-commit-config.yaml"
   - changed-files:
-    - any-glob-to-any-file: '.python-version'
+      - any-glob-to-any-file: ".python-version"
   - changed-files:
-    - any-glob-to-any-file: 'pyproject.toml'
+      - any-glob-to-any-file: "pyproject.toml"
   - changed-files:
-    - any-glob-to-any-file: 'justfile'
+      - any-glob-to-any-file: "justfile"
 
 # Dependencies
 dependencies:
   - changed-files:
-    - any-glob-to-any-file: 'pyproject.toml'
+      - any-glob-to-any-file: "pyproject.toml"
   - changed-files:
-    - any-glob-to-any-file: 'uv.lock'
+      - any-glob-to-any-file: "uv.lock"
   - changed-files:
-    - any-glob-to-any-file: '.github/dependabot.yml'
+      - any-glob-to-any-file: ".github/dependabot.yml"
 
 # Frontend/Static files
 frontend:
   - changed-files:
-    - any-glob-to-any-file: 'geocos_backend/static/**/*'
+      - any-glob-to-any-file: "cosray_backend/static/**/*"
   - changed-files:
-    - any-glob-to-any-file: 'geocos_backend/templates/**/*'
+      - any-glob-to-any-file: "cosray_backend/templates/**/*"
 
 # Localization
 locale:
   - changed-files:
-    - any-glob-to-any-file: 'locale/**/*'
+      - any-glob-to-any-file: "locale/**/*"
