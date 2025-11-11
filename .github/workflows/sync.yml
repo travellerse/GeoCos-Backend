@@ -1,0 +1,49 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: sync-gitlab-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Configure Git identity
+        run: |
+          if [ -z "${{ secrets.GITLAB_USERNAME }}" ] || [ -z "${{ secrets.GITLAB_EMAIL }}" ]; then
+            echo "GitLab identity secrets not configured. Skipping identity setup."
+            exit 0
+          fi
+
+          git config user.name "${{ secrets.GITLAB_USERNAME }}"
+          git config user.email "${{ secrets.GITLAB_EMAIL }}"
+      - name: Push to GitLab
+        shell: bash
+        env:
+          SYNC_BRANCH: main
+        run: |
+          set -euo pipefail
+
+          if [ -z "${{ secrets.GITLAB_URL }}" ] || [ -z "${{ secrets.GITLAB_USERNAME }}" ] || [ -z "${{ secrets.GITLAB_TOKEN }}" ]; then
+            echo "GitLab sync secrets not fully configured. Skipping mirror push."
+            exit 0
+          fi
+
+          if git remote get-url gitlab >/dev/null 2>&1; then
+            git remote remove gitlab
+          fi
+
+          git remote add gitlab "https://${{ secrets.GITLAB_URL }}"
+          git config remote.gitlab.pushurl "https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_TOKEN }}@${{ secrets.GITLAB_URL }}"
+
+          git push gitlab "HEAD:${SYNC_BRANCH}" --force-with-lease --follow-tags

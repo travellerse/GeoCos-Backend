@@ -1,0 +1,5 @@
+secrets:
+  - GITLAB_USERNAME
+  - GITLAB_EMAIL
+  - GITLAB_TOKEN
+  - GITLAB_URL
