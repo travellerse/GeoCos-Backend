@@ -43,7 +43,7 @@ def parse_timestamp(value: object) -> int:
 
 
 def normalize_device_path(device: str) -> str:
-    base_path = (getattr(settings, "IOTDB", {}) or {}).get("ROOT_PATH") or ""
+    base_path = getattr(settings, "IOTDB", {}).get("ROOT_PATH", "")
     trimmed = device.strip().strip(".")
     if not trimmed:
         raise ValueError("Device identifier cannot be empty")
