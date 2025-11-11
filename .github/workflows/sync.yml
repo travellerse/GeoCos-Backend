@@ -57,7 +57,7 @@ jobs:
           git remote add gitlab "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}"
 
           # Keep remote-tracking refs synced before using force-with-lease.
-          git fetch --no-tags --prune --depth=1 gitlab "${SYNC_BRANCH}" || true
+          git fetch --no-tags --prune --depth=1 gitlab "${SYNC_BRANCH}" 2>&1 | sed -E "s#https://[^ ]+#https://***#g"
 
           if ! git push gitlab "HEAD:${SYNC_BRANCH}" --force-with-lease --follow-tags; then
             echo "Lease check failed; forcing mirror update." >&2
