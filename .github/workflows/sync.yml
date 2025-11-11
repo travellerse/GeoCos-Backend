@@ -25,7 +25,7 @@ jobs:
         run: |
           if [ -z "${GITLAB_USERNAME}" ] || [ -z "${GITLAB_EMAIL}" ]; then
             echo "GitLab identity secrets not configured. Skipping identity setup."
-            exit 0
+            exit 1
           fi
 
           git config user.name "${GITLAB_USERNAME}"
@@ -41,8 +41,8 @@ jobs:
           set -euo pipefail
 
           if [ -z "${GITLAB_URL}" ] || [ -z "${GITLAB_USERNAME}" ] || [ -z "${GITLAB_TOKEN}" ]; then
-            echo "GitLab sync secrets not fully configured. Skipping mirror push."
-            exit 0
+             echo "ERROR: GitLab sync secrets (GITLAB_URL, GITLAB_USERNAME, GITLAB_TOKEN) are not fully configured. Failing job to alert maintainers."
+             exit 1
           fi
 
           echo "::add-mask::${GITLAB_URL}"
