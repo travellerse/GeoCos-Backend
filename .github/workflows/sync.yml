@@ -43,7 +43,12 @@ jobs:
             git remote remove gitlab
           fi
 
-          git remote add gitlab "https://${{ secrets.GITLAB_URL }}"
-          git config remote.gitlab.pushurl "https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_TOKEN }}@${{ secrets.GITLAB_URL }}"
+          git remote add gitlab "https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_TOKEN }}@${{ secrets.GITLAB_URL }}"
 
-          git push gitlab "HEAD:${SYNC_BRANCH}" --force-with-lease --follow-tags
+          # Keep remote-tracking refs synced before using force-with-lease.
+          git fetch --no-tags --prune --depth=1 gitlab "${SYNC_BRANCH}" || true
+
+          if ! git push gitlab "HEAD:${SYNC_BRANCH}" --force-with-lease --follow-tags; then
+            echo "Lease check failed; forcing mirror update." >&2
+            git push gitlab "HEAD:${SYNC_BRANCH}" --force --follow-tags
+          fi
