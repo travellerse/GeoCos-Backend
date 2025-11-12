@@ -14,6 +14,21 @@ def test_parse_timestamp_rejects_boolean() -> None:
         parse_timestamp(True)
 
 
+def test_parse_timestamp_rejects_list() -> None:
+    with pytest.raises(ValueError):
+        parse_timestamp([])
+
+
+def test_parse_timestamp_rejects_dict() -> None:
+    with pytest.raises(ValueError):
+        parse_timestamp({})
+
+
+def test_parse_timestamp_rejects_empty_string() -> None:
+    with pytest.raises(ValueError):
+        parse_timestamp("")
+
+
 @pytest.mark.parametrize(
     ("device", "expected"),
     [
@@ -29,3 +44,14 @@ def test_normalize_device_path(device: str, expected: str) -> None:
 def test_normalize_device_path_rejects_blank() -> None:
     with pytest.raises(ValueError):
         normalize_device_path("   ")
+
+
+def test_normalize_device_path_rejects_only_dots() -> None:
+    with pytest.raises(ValueError):
+        normalize_device_path("...")
+
+
+def test_normalize_device_path_with_no_root_path_setting(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("geocos_backend.mu_packets.services.settings", {"IOTDB": {"ROOT_PATH": ""}})
+    assert normalize_device_path("device1") == "device1"
+    assert normalize_device_path(".device2") == "device2"

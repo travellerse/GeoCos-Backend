@@ -318,7 +318,7 @@ IOTDB = {
     "POOL_SIZE": _env_int("IOTDB_POOL_SIZE", 5),
     "POOL_WAIT_TIMEOUT_MS": _env_int("IOTDB_POOL_WAIT_TIMEOUT_MS", 3000),
     "USE_SSL": _env_bool("IOTDB_USE_SSL", False),
-    "CA_CERTS": _env_str("IOTDB_CA_CERTS", "") or None,
+    "CA_CERTS": _env_str("IOTDB_CA_CERTS", "").strip() or None,
     "NODE_URLS": _env_list("IOTDB_NODE_URLS"),
     "ENABLE_REDIRECTION": _env_bool("IOTDB_ENABLE_REDIRECTION", True),
     "ROOT_PATH": _env_str("IOTDB_ROOT_PATH", "root.cosray"),

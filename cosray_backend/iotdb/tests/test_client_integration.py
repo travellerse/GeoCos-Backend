@@ -42,7 +42,7 @@ def _wait_for_iotdb(host: str, port: int, *, timeout: float = 120.0, interval: f
 
 @pytest.fixture(scope="session")
 def iotdb_docker() -> Iterator[tuple[str, int]]:
-    image = os.getenv("IOTDB_TEST_IMAGE", "apache/iotdb:" + IOTDB_VERSION)
+    image = os.getenv("IOTDB_TEST_IMAGE", f"apache/iotdb:{IOTDB_VERSION}")
     try:
         container = DockerContainer(image).with_exposed_ports(6667)
     except (DockerException, requests_exceptions.ConnectionError) as exc:  # pragma: no cover - environment specific
@@ -62,17 +62,14 @@ def iotdb_docker() -> Iterator[tuple[str, int]]:
 def configured_iotdb(settings, iotdb_docker: tuple[str, int]) -> Iterator[dict[str, object]]:
     host, port = iotdb_docker
 
-    config = dict(settings.IOTDB)
-    config.update(
-        {
-            "HOST": host,
-            "PORT": port,
-            "USERNAME": "root",
-            "PASSWORD": "root",
-            "NODE_URLS": (),
-            "USE_SSL": False,
-        }
-    )
+    config = dict(settings.IOTDB) | {
+        "HOST": host,
+        "PORT": port,
+        "USERNAME": "root",
+        "PASSWORD": "root",
+        "NODE_URLS": (),
+        "USE_SSL": False,
+    }
     settings.IOTDB = config
 
     reset_iotdb_service_cache()
@@ -93,14 +90,12 @@ def test_write_records_against_iotdb_container(configured_iotdb: dict[str, objec
     session = Session(host, port, username, password)
     session.open(False)
     try:
-        try:
-            session.set_storage_group(storage_group)
-        except Exception:
-            # Storage group already exists; safe to ignore.
-            pass
+        session.set_storage_group(storage_group)
+    except Exception:
+        # Storage group already exists; safe to ignore.
+        pass
     finally:
         session.close()
-
     device_suffix = uuid.uuid4().hex
     device_path = f"{storage_group}.pytest_{device_suffix}"
 
