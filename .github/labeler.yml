@@ -1,0 +1,93 @@
+# Configuration for actions/labeler@v4
+# See: https://github.com/actions/labeler
+
+# Documentation changes
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: 'docs/**/*'
+  - changed-files:
+    - any-glob-to-any-file: '*.md'
+  - changed-files:
+    - any-glob-to-any-file: '*.rst'
+
+# Test files
+tests:
+  - changed-files:
+    - any-glob-to-any-file: '**/tests/**/*'
+  - changed-files:
+    - any-glob-to-any-file: '**/test_*.py'
+  - changed-files:
+    - any-glob-to-any-file: 'tests/**/*'
+
+# Docker and deployment
+docker:
+  - changed-files:
+    - any-glob-to-any-file: 'compose/**/*'
+  - changed-files:
+    - any-glob-to-any-file: 'docker-compose*.yml'
+  - changed-files:
+    - any-glob-to-any-file: '**/Dockerfile'
+  - changed-files:
+    - any-glob-to-any-file: '.dockerignore'
+
+# GitHub workflows and CI
+ci:
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/**/*'
+  - changed-files:
+    - any-glob-to-any-file: '.github/actionlint.yaml'
+  - changed-files:
+    - any-glob-to-any-file: '.gitlab-ci.yml'
+
+# Django app: users
+users:
+  - changed-files:
+    - any-glob-to-any-file: 'geocos_backend/users/**/*'
+
+# Django app: iotdb
+iotdb:
+  - changed-files:
+    - any-glob-to-any-file: 'geocos_backend/iotdb/**/*'
+
+# Django app: mu_packets
+mu_packets:
+  - changed-files:
+    - any-glob-to-any-file: 'geocos_backend/mu_packets/**/*'
+
+# Configuration files
+config:
+  - changed-files:
+    - any-glob-to-any-file: 'config/**/*'
+  - changed-files:
+    - any-glob-to-any-file: '.envs/**/*'
+  - changed-files:
+    - any-glob-to-any-file: '.editorconfig'
+  - changed-files:
+    - any-glob-to-any-file: '.pre-commit-config.yaml'
+  - changed-files:
+    - any-glob-to-any-file: '.python-version'
+  - changed-files:
+    - any-glob-to-any-file: 'pyproject.toml'
+  - changed-files:
+    - any-glob-to-any-file: 'justfile'
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: 'pyproject.toml'
+  - changed-files:
+    - any-glob-to-any-file: 'uv.lock'
+  - changed-files:
+    - any-glob-to-any-file: '.github/dependabot.yml'
+
+# Frontend/Static files
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: 'geocos_backend/static/**/*'
+  - changed-files:
+    - any-glob-to-any-file: 'geocos_backend/templates/**/*'
+
+# Localization
+locale:
+  - changed-files:
+    - any-glob-to-any-file: 'locale/**/*'
