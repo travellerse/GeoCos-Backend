@@ -38,12 +38,10 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-  # To run the Makefile
-  make \
-  # psycopg dependencies
-  libpq-dev \
-  # Translations dependencies
+  # alphabetical order
   gettext \
+  libpq-dev \
+  make \
   # Uncomment below lines to enable Sphinx output to latex and pdf
   # texlive-latex-recommended \
   # texlive-fonts-recommended \
@@ -57,8 +55,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 COPY --from=python-build-stage --chown=app:app /app /app
 
 COPY ./compose/local/docs/start /start-docs
-RUN sed -i 's/\r$//g' /start-docs
-RUN chmod +x /start-docs
+RUN sed -i 's/\r$//g' /start-docs \
+  && chmod +x /start-docs
 
 ENV PATH="/app/.venv/bin:$PATH"
 
