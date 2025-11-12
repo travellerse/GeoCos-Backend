@@ -9,26 +9,7 @@ env:
   COMPOSE_DOCKER_CLI_BUILD: 1
 
 on:
-  pull_request:
-    branches: ["dev"]
-    paths:
-      - ".github/workflows/**"
-      - "docker-compose.local.yml"
-      - "docker-compose.docs.yml"
-      - "docker-compose.*.yml"
-      - "compose/local/**"
-      - "compose/production/**"
-      - "compose/**/Dockerfile"
-      - "compose/**/start"
-      - "config/**"
-      - "manage.py"
-      - "pyproject.toml"
-      - "geocos_backend/**/*.py"
-      - "users/**/*.py"
-      - "tests/**"
   push:
-    branches-ignore:
-      - "main"
     paths:
       - ".github/workflows/**"
       - "docker-compose.local.yml"
