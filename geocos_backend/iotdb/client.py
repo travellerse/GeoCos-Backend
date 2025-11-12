@@ -44,7 +44,7 @@ class IoTDBSettings:
     @classmethod
     def from_django(cls) -> "IoTDBSettings":
         config = getattr(settings, "IOTDB", None)
-        if not config:
+        if config is None:
             raise IoTDBConfigurationError("IOTDB settings are missing. Define settings.IOTDB.")
 
         ca_certs_raw = config.get("CA_CERTS") or None

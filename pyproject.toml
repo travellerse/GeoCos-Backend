@@ -23,7 +23,7 @@ testpaths = ["tests", "users", "geocos_backend"]
 
 # ==== Coverage ====
 [tool.coverage.run]
-include = ["geocos_backend/**"]
+source = ["geocos_backend"]
 omit = [
     "*/migrations/*",
     "*/tests/*",
