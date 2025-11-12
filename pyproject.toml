@@ -23,7 +23,7 @@ testpaths = ["tests", "cosray_backend"]
 
 # ==== Coverage ====
 [tool.coverage.run]
-include = ["cosray_backend/**"]
+source = ["cosray_backend"]
 omit = [
     "*/migrations/*",
     "*/tests/*",
