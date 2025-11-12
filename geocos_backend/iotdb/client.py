@@ -79,6 +79,12 @@ class IoTDBSessionManager:
             self._pool = self._create_pool()
 
     def _create_pool(self) -> SessionPool:
+        # Validate pool_size and pool_wait_timeout_ms
+        if self._settings.pool_size is not None and self._settings.pool_size <= 0:
+            raise ValueError(f"pool_size must be positive, got {self._settings.pool_size}")
+        if self._settings.pool_wait_timeout_ms is not None and self._settings.pool_wait_timeout_ms <= 0:
+            raise ValueError(f"pool_wait_timeout_ms must be positive, got {self._settings.pool_wait_timeout_ms}")
+
         pool_kwargs: dict[str, Any] = {
             "user_name": self._settings.username,
             "password": self._settings.password,
@@ -174,11 +180,11 @@ class IoTDBService:
     def _coerce_value(value: Any) -> tuple[Any, TSDataType]:
         if isinstance(value, bool):
             return value, TSDataType.BOOLEAN
-        if isinstance(value, int) and not isinstance(value, bool):
+        if isinstance(value, int):
             return value, TSDataType.INT64
         if isinstance(value, float):
             return value, TSDataType.DOUBLE
-        if isinstance(value, Decimal):
+        if isinstance(value, Decimal):  # iotdb 不支持 Decimal 类型，转换为 float
             return float(value), TSDataType.DOUBLE
         if isinstance(value, str):
             return value, TSDataType.TEXT

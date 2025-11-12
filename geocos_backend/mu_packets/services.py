@@ -11,7 +11,12 @@ from geocos_backend.iotdb.client import TimeSeriesRecord, get_iotdb_service
 
 
 def parse_timestamp(value: object) -> int:
-    """Convert various timestamp representations to IoTDB-compatible milliseconds."""
+    """
+    Convert various timestamp representations to IoTDB-compatible milliseconds.
+
+    Integer values are expected to be in milliseconds since epoch.
+    If you have timestamps in seconds, convert them to milliseconds before calling this function.
+    """
 
     if isinstance(value, bool):
         raise ValueError("Boolean values are not valid timestamps")
@@ -32,8 +37,7 @@ def parse_timestamp(value: object) -> int:
         except ValueError:
             pass
 
-        parsed = parse_datetime(candidate)
-        if parsed is None:
+        if (parsed := parse_datetime(candidate)) is None:
             raise ValueError(f"Unable to parse timestamp: {value!r}")
 
         aware_dt = parsed if timezone.is_aware(parsed) else timezone.make_aware(parsed, dt_timezone.utc)
@@ -44,13 +48,10 @@ def parse_timestamp(value: object) -> int:
 
 def normalize_device_path(device: str) -> str:
     base_path = getattr(settings, "IOTDB", {}).get("ROOT_PATH", "")
-    trimmed = device.strip().strip(".")
-    if not trimmed:
+    if not (trimmed := device.strip().strip(".")):
         raise ValueError("Device identifier cannot be empty")
 
-    if base_path and not trimmed.startswith(base_path):
-        return f"{base_path}.{trimmed}".replace("..", ".")
-    return trimmed
+    return f"{base_path}.{trimmed}".replace("..", ".") if base_path and not trimmed.startswith(base_path) else trimmed
 
 
 def ingest_packet(device: str, records: Sequence[TimeSeriesRecord]) -> None:
