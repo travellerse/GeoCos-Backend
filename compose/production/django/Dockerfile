@@ -26,6 +26,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # 复制项目代码并再次同步以安装应用本身
 COPY . ${APP_HOME}
 RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock,readonly \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml,readonly \
     uv sync --locked --no-dev
 
 # ============================================================
@@ -46,7 +48,6 @@ RUN apt-get update && \
       gettext \
       libpq-dev \
       wait-for-it && \
-    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
@@ -87,6 +88,6 @@ USER django
 # 编译翻译文件（提前执行，避免容器启动时重复）
 RUN DATABASE_URL="" \
     DJANGO_SETTINGS_MODULE="config.settings.test" \
-    python manage.py compilemessages || true
+    python manage.py compilemessages || echo "No translation files to compile"
 
 ENTRYPOINT ["/entrypoint"]
