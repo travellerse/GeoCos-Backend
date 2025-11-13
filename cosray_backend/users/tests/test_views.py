@@ -12,12 +12,13 @@ def test_headless_configuration():
     assert settings.HEADLESS_CLIENTS == ("app",)
 
 
+# https://allauth.org/docs/draft-api/#tag/Authentication:-Account/paths/~1_allauth~1%7Bclient%7D~1v1~1auth~1login/post
 @pytest.mark.django_db
 def test_headless_login_url_accessible():
     client = APIClient()
     response = client.post(
         "/_allauth/app/v1/auth/login",
-        data={"login": "test@example.com", "password": "testpass"},
+        data={"username": "test", "password": "testpass"},
         format="json",
     )
     # Missing credentials should yield a validation error (400) while authenticated retries return 409.
@@ -27,20 +28,24 @@ def test_headless_login_url_accessible():
 @pytest.mark.django_db
 def test_headless_login_successful_with_valid_credentials(django_user_model):
     # Create a user with known credentials
+    username = "validuser"
     email = "validuser@example.com"
     password = "validpassword123"
-    user = django_user_model.objects.create_user(email=email, password=password)
+    user = django_user_model.objects.create_user(username=username, email=email, password=password)
+
+    # verify email in allauth
+    user.emailaddress_set.create(email=email, verified=True, primary=True)
 
     client = APIClient()
     response = client.post(
         "/_allauth/app/v1/auth/login",
-        data={"login": email, "password": password},
+        data={"username": username, "password": password},
         format="json",
     )
     assert response.status_code == 200
     # Check for token/session data in the response
     data = response.json()
-    assert "token" in data or "session" in data or "key" in data
+    assert "session_token" in data.get("meta", {})
 
 
 @pytest.mark.django_db
