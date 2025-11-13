@@ -8,43 +8,39 @@ ARG APP_HOME=/app
 
 WORKDIR ${APP_HOME}
 
-# we need to move the virtualenv outside of the $APP_HOME directory because it will be overriden by the docker compose mount
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
+# 环境变量
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0 \
+    PATH="${APP_HOME}/.venv/bin:$PATH"
 
-# Install apt packages
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  # dependencies for building Python packages
-  build-essential \
-  # psycopg dependencies
-  libpq-dev \
-  gettext \
-  wait-for-it
+# 安装构建与运行依赖
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+      bash-completion build-essential gettext git \
+      libpq-dev nano ssh sudo wait-for-it && \
+    rm -rf /var/lib/apt/lists/*
 
-# Requirements are installed here to ensure they will be cached.
+# 安装 Python 依赖（使用缓存 mount 加速）
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock:rw \
     uv sync --no-install-project
 
+# 复制项目代码
 COPY . ${APP_HOME}
 
+# 再次同步以确保项目依赖完整（仍使用缓存）
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock:rw \
-    uv sync
+    uv sync --frozen
 
-# devcontainer dependencies and utils
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  sudo git bash-completion nano ssh
-
-# Create devcontainer user and add it to sudoers
-RUN groupadd --gid 1000 dev-user \
-  && useradd --uid 1000 --gid dev-user --shell /bin/bash --create-home dev-user \
-  && echo dev-user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/dev-user \
-  && chmod 0440 /etc/sudoers.d/dev-user
-
-ENV PATH="/${APP_HOME}/.venv/bin:$PATH"
-ENV PYTHONPATH="${APP_HOME}/.venv/lib/python3.13/site-packages:$PYTHONPATH"
+# 创建开发用户
+RUN groupadd --gid 1000 dev-user && \
+    useradd --uid 1000 --gid dev-user --shell /bin/bash --create-home dev-user && \
+    echo "dev-user ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/dev-user && \
+    chmod 0440 /etc/sudoers.d/dev-user
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
