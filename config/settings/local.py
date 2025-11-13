@@ -1,4 +1,4 @@
-from .base import CSRF_TRUSTED_ORIGINS, INSTALLED_APPS, env
+from .base import *  # noqa: F403
 
 # GENERAL
 # ------------------------------------------------------------------------------
