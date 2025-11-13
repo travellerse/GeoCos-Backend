@@ -10,7 +10,7 @@ import environ
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # cosray_backend/
 APPS_DIR = BASE_DIR / "cosray_backend"
-env = cast(Any, environ.Env())
+env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:

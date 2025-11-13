@@ -1,5 +1,4 @@
-from .base import *  # noqa: F403
-from .base import INSTALLED_APPS, MIDDLEWARE, env
+from .base import CSRF_TRUSTED_ORIGINS, INSTALLED_APPS, env
 
 # GENERAL
 # ------------------------------------------------------------------------------

@@ -44,9 +44,3 @@ uv run coverage run -m pytest
 uv run coverage html
 uv run python -m webbrowser -t htmlcov/index.html
 ```
-
-## 配置要点
-
-- `CORS_ALLOW_ALL_ORIGINS`、`CORS_ALLOWED_ORIGINS` 和 `CSRF_TRUSTED_ORIGINS` 可通过环境变量控制。
-- 生产环境请务必设置 `DJANGO_ALLOWED_HOSTS`、`DJANGO_SECRET_KEY` 以及邮件/缓存等变量。
-- 提供 `_allauth/` 下的 headless 认证路由，以及 `/api/` 下的业务接口。
