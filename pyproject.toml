@@ -19,11 +19,11 @@ norecursedirs = [
     "__pycache__",
 ]
 
-testpaths = ["tests", "users", "geocos_backend"]
+testpaths = ["tests", "cosray_backend"]
 
 # ==== Coverage ====
 [tool.coverage.run]
-include = ["geocos_backend/**"]
+include = ["cosray_backend/**"]
 omit = [
     "*/migrations/*",
     "*/tests/*",

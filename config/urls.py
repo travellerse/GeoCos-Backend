@@ -1,11 +1,8 @@
 from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib import admin
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.http import HttpRequest, JsonResponse
 from django.urls import include, path
 from django.views import defaults as default_views
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView
 from rest_framework.authtoken.views import obtain_auth_token
 
 
@@ -13,31 +10,23 @@ def api_root(request: HttpRequest) -> JsonResponse:
     """Lightweight entry point for mobile clients."""
 
     base_url = request.build_absolute_uri("/")
+    schema_url = request.build_absolute_uri("/api/schema/")
     return JsonResponse(
         {
             "service": "CosRay-Backend API",
             "status": "ok",
             "base_url": base_url.rstrip("/"),
-            "docs_url": request.build_absolute_uri("/api/docs/"),
-            "schema_url": request.build_absolute_uri("/api/schema/"),
+            "schema_url": schema_url,
         }
     )
 
 
 urlpatterns = [
     path("", api_root, name="api-root"),
-    # Django Admin, use {% url 'admin:index' %}
-    path(settings.ADMIN_URL, admin.site.urls),
-    path("accounts/", include("allauth.urls")),
     path("_allauth/", include("allauth.headless.urls")),
     # Your stuff: custom urls includes go here
     # ...
-    # Media files
-    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
-if settings.DEBUG:
-    # Static file serving when using Gunicorn + Uvicorn for local web socket development
-    urlpatterns += staticfiles_urlpatterns()
 
 # API URLS
 urlpatterns += [
@@ -46,14 +35,14 @@ urlpatterns += [
     # DRF auth token
     path("api/auth-token/", obtain_auth_token, name="obtain_auth_token"),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
-    path(
-        "api/docs/",
-        SpectacularSwaggerView.as_view(url_name="api-schema"),
-        name="api-docs",
-    ),
 ]
 
 if settings.DEBUG:
+    from django.conf.urls.static import static
+
+    # Media files served only in debug mode; production should use a CDN/object storage.
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
     urlpatterns += [

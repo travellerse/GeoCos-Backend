@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     """
     Default custom user model for CosRay-Backend.
-    If adding fields that need to be filled at user signup,
-    check forms.SignupForm and forms.SocialSignupForms accordingly.
+    Additional profile fields should be exposed through dedicated API serializers
+    instead of Django forms to keep the backend presentation-layer agnostic.
     """
 
     # First and last name do not cover name patterns around the globe
