@@ -28,9 +28,9 @@ django.setup()
 
 # -- Project information -----------------------------------------------------
 
-project = "geocos_backend"
-copyright = """2025, Grid Group"""  # noqa: A001
-author = "Grid Group"
+project = "CosRay-Backend"
+copyright = """2025, GRID-Cos-Ray-Detection-Reasearch-Group"""  # noqa: A001
+author = "GRID-Cos-Ray-Detection-Reasearch-Group"
 
 
 # -- General configuration ---------------------------------------------------

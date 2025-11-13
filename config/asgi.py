@@ -1,5 +1,5 @@
 """
-ASGI config for geocos_backend project.
+ASGI config for CosRay-Backend project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -15,9 +15,9 @@ from pathlib import Path
 from django.core.asgi import get_asgi_application
 
 # This allows easy placement of apps within the interior
-# geocos_backend directory.
+# cosray_backend directory.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-sys.path.append(str(BASE_DIR / "geocos_backend"))
+sys.path.append(str(BASE_DIR / "cosray_backend"))
 
 # If DJANGO_SETTINGS_MODULE is unset, default to the local settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")

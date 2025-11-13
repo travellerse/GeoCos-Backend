@@ -1,5 +1,4 @@
 from .base import *  # noqa: F403
-from .base import INSTALLED_APPS, MIDDLEWARE, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -8,7 +7,7 @@ DEBUG = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
-    default="B5phnadduaevaGRtKvv5vhPVEGvZrzEqy9MKoFf6oSq1TsYsQhACLIvaHWfNwLjV",
+    default="eluP5ZXzB3txkA2HanPOCO0nk6BGyR48ARvl341FGRGYtdUiBT1XRh4pJyQVK6NR",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]  # noqa: S104
@@ -25,59 +24,30 @@ CACHES = {
 
 # EMAIL
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = env("EMAIL_HOST", default="mailpit")
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-port
-EMAIL_PORT = 1025
+# https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
+EMAIL_BACKEND = env(
+    "DJANGO_EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend",
+)
 
-# WhiteNoise
+# django-debug-toolbar (removed for API-only deployment)
 # ------------------------------------------------------------------------------
-# http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
-INSTALLED_APPS = ["whitenoise.runserver_nostatic", *INSTALLED_APPS]
-
-
-# django-debug-toolbar
-# ------------------------------------------------------------------------------
-# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
-INSTALLED_APPS += ["debug_toolbar"]
-# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#middleware
-MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
-# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config
-DEBUG_TOOLBAR_CONFIG = {
-    "DISABLE_PANELS": [
-        "debug_toolbar.panels.redirects.RedirectsPanel",
-        # Disable profiling panel due to an issue with Python 3.12+:
-        # https://github.com/jazzband/django-debug-toolbar/issues/1875
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-    ],
-    "SHOW_TEMPLATE_CONTEXT": True,
-}
-# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#internal-ips
-INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
-# Provide a safe default when USE_DOCKER is not set in the environment
 USE_DOCKER = env.bool("USE_DOCKER", default=False)
-if USE_DOCKER:
-    import socket
-
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS += [".".join([*ip.split(".")[:-1], "1"]) for ip in ips]
-    # RunServerPlus
-    # ------------------------------------------------------------------------------
-    # Custom setting for RunServerPlus to fix reloader issues in Windows
-    # Docker environment
-    # Werkzeug reloader type [auto, watchdog, or stat]
-    RUNSERVERPLUS_POLLER_RELOADER_TYPE = "stat"
-    # If you have CPU and IO load issues, you can increase this poller interval e.g) 5
-    RUNSERVERPLUS_POLLER_RELOADER_INTERVAL = 1
 
 # django-extensions
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]
-# Celery
-# ------------------------------------------------------------------------------
 
-# https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-eager-propagates
-CELERY_TASK_EAGER_PROPAGATES = True
+# API-only local development usually serves a separate frontend (Next.js, Vite, etc.).
+# Allow all origins locally to avoid extra environment tweaks and trust common dev hosts for CSRF.
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS += [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 # Your stuff...
 # ------------------------------------------------------------------------------

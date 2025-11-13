@@ -1,6 +1,6 @@
-# Translations for the geocos_backend project
-# Copyright (C) 2025 Grid Group
-# Grid Group <grid-group@example.com>, 2025.
+# Translations for the CosRay-Backend project
+# Copyright (C) 2025 GRID-Cos-Ray-Detection-Reasearch-Group
+# GRID-Cos-Ray-Detection-Reasearch-Group <grid-cos-ray-detection-reasearch-group@example.com>, 2025.
 #
 #, fuzzy
 msgid ""

@@ -1,0 +1,5 @@
+/*
+ * Deprecated placeholder: the backend no longer ships compiled CSS assets.
+ * Keep the file empty so that accidental collectstatic steps do not fail when
+ * legacy paths are referenced. Frontend styling lives in standalone projects.
+ */
