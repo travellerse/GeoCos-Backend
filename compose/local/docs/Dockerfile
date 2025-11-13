@@ -38,12 +38,12 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-  # Translations dependencies
-  gettext \
-  # psycopg dependencies
-  libpq-dev \
   # To run the Makefile
   make \
+  # psycopg dependencies
+  libpq-dev \
+  # Translations dependencies
+  gettext \
   # Uncomment below lines to enable Sphinx output to latex and pdf
   # texlive-latex-recommended \
   # texlive-fonts-recommended \

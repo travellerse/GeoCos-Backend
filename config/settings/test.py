@@ -3,14 +3,14 @@ With these settings, tests run faster.
 """
 
 from .base import *  # noqa: F403
-from .base import TEMPLATES, env
+from .base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
-    default="UziDyQ4InF8Y0gP1aiPuSrfpSONjL8fhcDXWC02gPFNrErDIEXCF6lUA74GyvAdn",
+    default="QoV1hvpVq5GcNHzj81RDnbwR8weYkyJlPooK3FNPEjGVJKOeiXELlGZsV66NItE5",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#test-runner
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
@@ -24,10 +24,6 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
-
-# DEBUGGING FOR TEMPLATES
-# ------------------------------------------------------------------------------
-TEMPLATES[0]["OPTIONS"]["debug"] = True  # type: ignore[index]
 
 # MEDIA
 # ------------------------------------------------------------------------------

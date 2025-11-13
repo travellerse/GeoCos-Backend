@@ -1,9 +1,9 @@
-.. geocos_backend documentation master file, created by
+.. CosRay-Backend documentation master file, created by
    sphinx-quickstart.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to geocos_backend's documentation!
+Welcome to CosRay-Backend's documentation!
 ======================================================================
 
 .. toctree::

@@ -1,7 +1,7 @@
 services:
   docs:
-    image: geocos_backend_local_docs
-    container_name: geocos_backend_local_docs
+    image: cosray_backend_local_docs
+    container_name: cosray_backend_local_docs
     build:
       context: .
       dockerfile: ./compose/local/docs/Dockerfile
@@ -11,7 +11,7 @@ services:
       - /app/.venv
       - ./docs:/docs:z
       - ./config:/app/config:z
-      - ./geocos_backend:/app/geocos_backend:z
+      - ./cosray_backend:/app/cosray_backend:z
     ports:
-      - "9000:9000"
+      - '9000:9000'
     command: /start-docs
