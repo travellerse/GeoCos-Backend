@@ -39,10 +39,18 @@ class IoTDBTestContainer(DockerContainer):
 
 @pytest.fixture(scope="module")
 def iotdb_endpoint() -> Iterator[tuple[str, int]]:
-    with IoTDBTestContainer() as container:
-        host = container.get_container_host_ip()
-        port = int(container.get_exposed_port(_IOTDB_PORT))
+
+    # 环境变量指定了 IoTDB 实例的主机和端口，则直接使用该实例进行测试
+    env_host = os.environ.get("IOTDB_HOST")
+    if env_host:
+        host = env_host
+        port = int(os.environ.get("IOTDB_PORT", _IOTDB_PORT))
         yield host, port
+    else:  # 否则启动一个临时的 IoTDB 容器进行测试
+        with IoTDBTestContainer() as container:
+            host = container.get_container_host_ip()
+            port = int(container.get_exposed_port(_IOTDB_PORT))
+            yield host, port
 
 
 def _build_settings(host: str, port: int) -> IoTDBSettings:
