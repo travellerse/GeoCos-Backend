@@ -51,3 +51,13 @@ CSRF_TRUSTED_ORIGINS += [
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+LOCAL_DEV_TEST_USER = {
+    "ENABLED": env.bool("LOCAL_DEV_TEST_USER_ENABLED", default=True),
+    "USERNAME": env("LOCAL_DEV_TEST_USER_USERNAME", default="test"),
+    "PASSWORD": env("LOCAL_DEV_TEST_USER_PASSWORD", default="LocalPass123!"),
+    "EMAIL": env("LOCAL_DEV_TEST_USER_EMAIL", default="localtester@example.com"),
+    "NAME": env("LOCAL_DEV_TEST_USER_NAME", default="Local Tester"),
+    "IS_STAFF": env.bool("LOCAL_DEV_TEST_USER_IS_STAFF", default=True),
+    "IS_SUPERUSER": env.bool("LOCAL_DEV_TEST_USER_IS_SUPERUSER", default=True),
+}
