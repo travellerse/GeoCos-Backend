@@ -1,7 +1,7 @@
 volumes:
   cosray_backend_local_postgres_data: {}
   cosray_backend_local_postgres_data_backups: {}
-
+  cosray_backend_local_iotdb_data: {}
 
 services:
   django:
@@ -12,14 +12,18 @@ services:
     container_name: cosray_backend_local_django
     depends_on:
       - postgres
+      - iotdb
     volumes:
       - /app/.venv
       - .:/app:z
     env_file:
       - ./.envs/.local/.django
       - ./.envs/.local/.postgres
+    environment:
+      - IOTDB_HOST=iotdb
+      - IOTDB_PORT=6667
     ports:
-      - '8000:8000'
+      - "8000:8000"
     command: /start
 
   postgres:
@@ -33,3 +37,15 @@ services:
       - cosray_backend_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
+
+  iotdb:
+    image: apache/iotdb:2.0.5-standalone
+    container_name: cosray_backend_local_iotdb
+    ports:
+      - "6667:6667"
+      - "18080:18080"
+    environment:
+      - IOTDB_USERNAME=root
+      - IOTDB_PASSWORD=root
+    volumes:
+      - cosray_backend_local_iotdb_data:/iotdb/data

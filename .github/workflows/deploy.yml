@@ -24,7 +24,7 @@ on:
       - "config/**"
       - "manage.py"
       - "pyproject.toml"
-      - "geocos_backend/**/*.py"
+      - "cosray_backend/**/*.py"
       - "users/**/*.py"
       - "tests/**"
   workflow_dispatch:
