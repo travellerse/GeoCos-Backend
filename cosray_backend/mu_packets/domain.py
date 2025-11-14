@@ -61,6 +61,12 @@ def _coerce_triplet(value: object, field_name: str) -> tuple[int, int, int] | No
     raise ValueError(f"Field '{field_name}' must be a sequence of three integers")
 
 
+def _coerce_optional_int(value: object, field_name: str) -> int | None:
+    if value is None:
+        return None
+    return _coerce_int(value, field_name, allow_negative=False)
+
+
 def _coerce_optional_bytes(value: object, field_name: str) -> tuple[int, ...] | None:
     if value is None:
         return None
@@ -77,6 +83,33 @@ def _format_triplet(triplet: tuple[int, int, int]) -> str:
 
 def _format_bytes(values: Iterable[int]) -> str:
     return "-".join(f"{value:02X}" for value in values)
+
+
+@dataclass(frozen=True)
+class PacketMetadata:
+    header: tuple[int, int, int] | None
+    tail: tuple[int, int, int] | None
+    crc: int | None
+    reserved: tuple[int, ...] | None
+
+    @classmethod
+    def from_mapping(cls, mapping: Mapping[str, Any]) -> "PacketMetadata":
+        return cls(
+            header=_coerce_triplet(mapping.get("head"), "head"),
+            tail=_coerce_triplet(mapping.get("tail"), "tail"),
+            crc=_coerce_optional_int(mapping.get("crc"), "crc"),
+            reserved=_coerce_optional_bytes(mapping.get("reserved"), "reserved"),
+        )
+
+    def augment_measurements(self, measurements: dict[str, Any], namespace: str) -> None:
+        if self.crc is not None:
+            measurements[f"{namespace}.packet_crc"] = self.crc
+        if self.header is not None:
+            measurements[f"{namespace}.packet_header"] = _format_triplet(self.header)
+        if self.tail is not None:
+            measurements[f"{namespace}.packet_tail"] = _format_triplet(self.tail)
+        if self.reserved is not None:
+            measurements[f"{namespace}.packet_reserved"] = _format_bytes(self.reserved)
 
 
 @dataclass(frozen=True)
@@ -116,19 +149,15 @@ class MuonPacket:
         utc_ms = parse_timestamp(_require_field(mapping, "utc"))
         events_payload = _require_sequence(_require_field(mapping, "events"), "events")
         events = tuple(MuonEvent.from_dict(item) for item in events_payload)
-        header = _coerce_triplet(mapping.get("head"), "head")
-        tail = _coerce_triplet(mapping.get("tail"), "tail")
-        crc = mapping.get("crc")
-        crc_value = _coerce_int(crc, "crc", allow_negative=False) if crc is not None else None
-        reserved = _coerce_optional_bytes(mapping.get("reserved"), "reserved")
+        metadata = PacketMetadata.from_mapping(mapping)
         return cls(
             package_counter=package_counter,
             utc_ms=utc_ms,
             events=events,
-            header=header,
-            tail=tail,
-            crc=crc_value,
-            reserved=reserved,
+            header=metadata.header,
+            tail=metadata.tail,
+            crc=metadata.crc,
+            reserved=metadata.reserved,
         )
 
     def to_time_series_records(self) -> list[TimeSeriesRecord]:
@@ -137,6 +166,7 @@ class MuonPacket:
 
         records: list[TimeSeriesRecord] = []
         event_count = len(self.events)
+        metadata = self.packet_metadata
 
         for index, event in enumerate(self.events):
             timestamp = event.timestamp_ms if event.timestamp_ms is not None else self.utc_ms + index
@@ -150,18 +180,20 @@ class MuonPacket:
                 "muon.utc_ms": self.utc_ms,
             }
 
-            if self.crc is not None:
-                measurements["muon.packet_crc"] = self.crc
-            if self.header is not None:
-                measurements["muon.packet_header"] = _format_triplet(self.header)
-            if self.tail is not None:
-                measurements["muon.packet_tail"] = _format_triplet(self.tail)
-            if self.reserved is not None:
-                measurements["muon.packet_reserved"] = _format_bytes(self.reserved)
+            metadata.augment_measurements(measurements, "muon")
 
             records.append(TimeSeriesRecord(timestamp=timestamp, measurements=measurements))
 
         return records
+
+    @property
+    def packet_metadata(self) -> PacketMetadata:
+        return PacketMetadata(
+            header=self.header,
+            tail=self.tail,
+            crc=self.crc,
+            reserved=self.reserved,
+        )
 
 
 @dataclass(frozen=True)
@@ -227,18 +259,14 @@ class TimelinePacket:
         )
         events_payload = _require_sequence(_require_field(mapping, "events"), "events")
         events = tuple(TimelineEvent.from_dict(item) for item in events_payload)
-        header = _coerce_triplet(mapping.get("head"), "head")
-        tail = _coerce_triplet(mapping.get("tail"), "tail")
-        crc = mapping.get("crc")
-        crc_value = _coerce_int(crc, "crc", allow_negative=False) if crc is not None else None
-        reserved = _coerce_optional_bytes(mapping.get("reserved"), "reserved")
+        metadata = PacketMetadata.from_mapping(mapping)
         return cls(
             package_counter=package_counter,
             events=events,
-            header=header,
-            tail=tail,
-            crc=crc_value,
-            reserved=reserved,
+            header=metadata.header,
+            tail=metadata.tail,
+            crc=metadata.crc,
+            reserved=metadata.reserved,
         )
 
     def to_time_series_records(self) -> list[TimeSeriesRecord]:
@@ -252,8 +280,24 @@ class TimelinePacket:
         if all(event.timestamp_ms is None and event.utc_ms is None for event in self.events):
             raise ValueError("All events are missing both timestamp_ms and utc_ms; cannot infer timestamps reliably.")
 
+        reference_timestamp = next(
+            (
+                event.timestamp_ms if event.timestamp_ms is not None else event.utc_ms
+                for event in self.events
+                if event.timestamp_ms is not None or event.utc_ms is not None
+            ),
+            None,
+        )
+        assert reference_timestamp is not None  # Guard above ensures this
+        metadata = self.packet_metadata
+
         for index, event in enumerate(self.events):
-            timestamp = event.timestamp_ms or event.utc_ms or (self.events[0].utc_ms + index)
+            fallback_timestamp = reference_timestamp + index
+            timestamp = event.timestamp_ms
+            if timestamp is None:
+                timestamp = event.utc_ms
+            if timestamp is None:
+                timestamp = fallback_timestamp
             measurements: dict[str, Any] = {
                 "timeline.cpu_time": event.cpu_time,
                 "timeline.pps": event.pps,
@@ -275,18 +319,20 @@ class TimelinePacket:
                 "timeline.event_count": event_count,
             }
 
-            if self.crc is not None:
-                measurements["timeline.packet_crc"] = self.crc
-            if self.header is not None:
-                measurements["timeline.packet_header"] = _format_triplet(self.header)
-            if self.tail is not None:
-                measurements["timeline.packet_tail"] = _format_triplet(self.tail)
-            if self.reserved is not None:
-                measurements["timeline.packet_reserved"] = _format_bytes(self.reserved)
+            metadata.augment_measurements(measurements, "timeline")
 
             records.append(TimeSeriesRecord(timestamp=timestamp, measurements=measurements))
 
         return records
+
+    @property
+    def packet_metadata(self) -> PacketMetadata:
+        return PacketMetadata(
+            header=self.header,
+            tail=self.tail,
+            crc=self.crc,
+            reserved=self.reserved,
+        )
 
 
 __all__ = [
