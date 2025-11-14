@@ -100,6 +100,50 @@ def test_create_packet_validation_error(api_client: APIClient) -> None:
     assert "device" in response.data
 
 
+def test_create_packet_invalid_measurement_name(api_client: APIClient) -> None:
+    user = UserFactory()
+    api_client.force_authenticate(user=user)
+
+    payload = {
+        "device": "test-device",
+        "records": [
+            {
+                "timestamp": "2024-06-01T12:00:00Z",
+                "measurements": {
+                    "invalid name!": 42,  # illegal characters in measurement name
+                },
+            }
+        ],
+    }
+
+    response = api_client.post("/api/mu-packets/", data=payload, format="json")
+
+    assert response.status_code == 400
+    assert "measurements" in response.data["records"][0]
+
+
+def test_create_packet_invalid_measurement_value(api_client: APIClient) -> None:
+    user = UserFactory()
+    api_client.force_authenticate(user=user)
+
+    payload = {
+        "device": "test-device",
+        "records": [
+            {
+                "timestamp": "2024-06-01T12:00:00Z",
+                "measurements": {
+                    "valid_name": {"not": "a number"},  # unsupported type
+                },
+            }
+        ],
+    }
+
+    response = api_client.post("/api/mu-packets/", data=payload, format="json")
+
+    assert response.status_code == 400
+    assert "measurements" in response.data["records"][0]
+
+
 def test_create_packet_muon_success(api_client: APIClient, monkeypatch: pytest.MonkeyPatch) -> None:
     user = UserFactory()
     api_client.force_authenticate(user=user)

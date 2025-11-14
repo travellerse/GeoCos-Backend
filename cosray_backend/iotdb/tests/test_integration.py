@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Iterator
+from typing import Any, Iterator, Mapping, cast
 
 os.environ.setdefault("TESTCONTAINERS_RYUK_DISABLED", "true")
 
@@ -11,6 +11,7 @@ from iotdb.Session import Session
 
 pytest.importorskip("testcontainers")
 
+from docker.errors import DockerException  # type: ignore[import]
 from testcontainers.core.container import DockerContainer  # noqa: E402
 from testcontainers.core.wait_strategies import PortWaitStrategy  # noqa: E402
 
@@ -39,22 +40,23 @@ class IoTDBTestContainer(DockerContainer):
 
 @pytest.fixture(scope="module")
 def iotdb_endpoint() -> Iterator[tuple[str, int]]:
-
     # 环境变量指定了 IoTDB 实例的主机和端口，则直接使用该实例进行测试
-    env_host = os.environ.get("IOTDB_HOST")
-    if env_host:
+    if env_host := os.environ.get("IOTDB_HOST"):
         host = env_host
         port = int(os.environ.get("IOTDB_PORT", _IOTDB_PORT))
         yield host, port
     else:  # 否则启动一个临时的 IoTDB 容器进行测试
-        with IoTDBTestContainer() as container:
-            host = container.get_container_host_ip()
-            port = int(container.get_exposed_port(_IOTDB_PORT))
-            yield host, port
+        try:
+            with IoTDBTestContainer() as container:
+                host = container.get_container_host_ip()
+                port = int(container.get_exposed_port(_IOTDB_PORT))
+                yield host, port
+        except (ConnectionError, DockerException) as exc:
+            pytest.skip(f"IoTDB integration tests require Docker access: {exc}")
 
 
 def _build_settings(host: str, port: int) -> IoTDBSettings:
-    base_settings = IoTDBSettings(
+    return IoTDBSettings(
         host=host,
         port=port,
         username=_USERNAME,
@@ -74,7 +76,6 @@ def _build_settings(host: str, port: int) -> IoTDBSettings:
         database=None,
         table_name_prefix=None,
     )
-    return base_settings
 
 
 def _ensure_storage_group(host: str, port: int, storage_group: str) -> None:
@@ -130,3 +131,23 @@ def test_iotdb_service_can_insert_records_in_tree_dialect(iotdb_endpoint: tuple[
     statuses = [values[1] for _, values in result]
     assert temperatures == [21.5, 22.0]
     assert statuses == ["OK", "WARN"]
+
+
+def test_iotdb_service_write_records_with_invalid_data_raises(iotdb_endpoint: tuple[str, int]) -> None:
+    host, port = iotdb_endpoint
+    _ensure_storage_group(host, port, _STORAGE_GROUP)
+
+    settings = _build_settings(host, port)
+    service = IoTDBService(settings, IoTDBSessionManager(settings))
+
+    device = f"{_STORAGE_GROUP}.device1"
+    # Invalid: measurements should be a dict of str->(float/int/str), but here we use a list
+    invalid_records = [
+        TimeSeriesRecord(
+            timestamp=3_000,
+            measurements=cast(Mapping[str, Any], ["not", "a", "dict"]),
+        ),
+    ]
+
+    with pytest.raises(Exception):  # Replace Exception with the specific error if known
+        service.write_records(device, invalid_records)

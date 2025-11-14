@@ -311,10 +311,7 @@ class _TableIoTDBWriter(_BaseWriter):
         column_names = measurement_order
         data_types = [data_types_map[name] for name in column_names]
         timestamps = [timestamp for timestamp, _ in processed]
-        values: list[list[Any]] = []
-        for _, row_values in processed:
-            values.append([row_values.get(name) for name in column_names])
-
+        values: list[list[Any]] = [[row_values.get(name) for name in column_names] for _, row_values in processed]
         return column_names, data_types, timestamps, values
 
     def _resolve_table_name(self, normalized_name: str) -> str:
@@ -353,6 +350,16 @@ def get_iotdb_service() -> IoTDBService:
 
 
 def reset_iotdb_service_cache() -> None:
+    try:
+        cached_service = get_iotdb_service()
+        # Attempt to close the session pool if present
+        if hasattr(cached_service, "manager") and hasattr(cached_service.manager, "close"):
+            cached_service.manager.close()
+    except Exception as e:
+        # Log any errors during close, but proceed to clear cache
+        import logging
+
+        logging.warning(f"Error closing IoTDBService session pool: {e}")
     get_iotdb_service.cache_clear()
 
 

@@ -57,8 +57,10 @@ class PacketRecordSerializer(serializers.Serializer):
                 raise serializers.ValidationError("measurement names must be non-empty strings")
             if not MEASUREMENT_NAME_PATTERN.fullmatch(name):
                 raise serializers.ValidationError(f"Invalid measurement name: {name}")
-            if isinstance(raw, (list, dict)):
-                raise serializers.ValidationError("measurement values must be scalar types")
+            if isinstance(raw, (list, dict, bytes, bytearray)):
+                raise serializers.ValidationError(
+                    "measurement values must be scalar types and cannot be bytes or bytearray"
+                )
             if raw is None:
                 raise serializers.ValidationError("measurement values cannot be null")
             validated[name] = raw

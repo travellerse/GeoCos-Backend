@@ -25,9 +25,9 @@ def normalize_device_path(device: str) -> str:
     return f"{base_path}.{trimmed}".replace("..", ".") if base_path and not trimmed.startswith(base_path) else trimmed
 
 
-def ingest_packet(device: str, records: Sequence[TimeSeriesRecord]) -> None:
+def ingest_packet(device: str, records: Sequence[TimeSeriesRecord]) -> int:
     normalized_device = normalize_device_path(device)
-    _write_records(normalized_device, records)
+    return _write_records(normalized_device, records)
 
 
 def ingest_muon_packet(device: str, packet: MuonPacket) -> int:

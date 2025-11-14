@@ -55,20 +55,28 @@ class PacketViewSet(GenericViewSet):
                 return len(records)
 
         elif packet_type == "muon":
+            muon_packet_data = validated.get("muon_packet")
+            if not isinstance(muon_packet_data, dict):
+                logger.error("Invalid muon packet payload for device %s: expected a mapping", device)
+                return Response(INVALID_MUON_DETAIL, status=status.HTTP_400_BAD_REQUEST)
             try:
-                muon_packet = MuonPacket.from_dict(validated["muon_packet"])
-            except ValueError:
-                logger.exception("Invalid muon packet payload for device %s", device)
+                muon_packet = MuonPacket.from_dict(muon_packet_data)
+            except ValueError as e:
+                logger.error("MuonPacket construction failed for device %s: %s", device, str(e))
                 return Response(INVALID_MUON_DETAIL, status=status.HTTP_400_BAD_REQUEST)
 
             def write_callable() -> int:
                 return ingest_muon_packet(device, muon_packet)
 
         elif packet_type == "timeline":
+            timeline_packet_data = validated.get("timeline_packet")
+            if not isinstance(timeline_packet_data, dict):
+                logger.error("Invalid timeline packet payload for device %s: expected a mapping", device)
+                return Response(INVALID_TIMELINE_DETAIL, status=status.HTTP_400_BAD_REQUEST)
             try:
-                timeline_packet = TimelinePacket.from_dict(validated["timeline_packet"])
-            except ValueError:
-                logger.exception("Invalid timeline packet payload for device %s", device)
+                timeline_packet = TimelinePacket.from_dict(timeline_packet_data)
+            except ValueError as e:
+                logger.error("TimelinePacket construction failed for device %s: %s", device, str(e))
                 return Response(INVALID_TIMELINE_DETAIL, status=status.HTTP_400_BAD_REQUEST)
 
             def write_callable() -> int:

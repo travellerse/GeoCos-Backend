@@ -82,8 +82,7 @@ def _build_settings(sql_dialect: str, **overrides) -> IoTDBSettings:
         "sql_dialect": sql_dialect,
         "database": None,
         "table_name_prefix": None,
-    }
-    base_kwargs.update(overrides)
+    } | overrides
     return IoTDBSettings(**base_kwargs)
 
 
@@ -92,14 +91,11 @@ def test_tree_service_writes_records_with_expected_payload():
     manager = DummySessionManager(session)
     settings = _build_settings("tree")
     service = IoTDBService(settings, cast(IoTDBSessionManager, manager))
-
     records = [
         TimeSeriesRecord(timestamp=1, measurements={"m1": 10, "m2": 2.5}),
         TimeSeriesRecord(timestamp=2, measurements={"m1": 20, "m2": 5.0}),
     ]
-
     service.write_records("root.test.device", records)
-
     assert manager.acquire_calls == 1
     assert len(session.calls) == 1
     call = session.calls[0]
@@ -111,6 +107,23 @@ def test_tree_service_writes_records_with_expected_payload():
         [TSDataType.INT64, TSDataType.DOUBLE],
     ]
     assert call["values"] == [[10, 2.5], [20, 5.0]]
+
+
+def test_tree_service_write_records_error_handling():
+    class ErrorSession(DummyTreeSession):
+        def insert_records_of_one_device(self, *args, **kwargs):
+            raise Exception("Simulated error")
+
+    manager = DummySessionManager(ErrorSession())
+    settings = _build_settings("tree")
+    service = IoTDBService(settings, cast(IoTDBSessionManager, manager))
+    records = [
+        TimeSeriesRecord(timestamp=1, measurements={"m1": 10, "m2": 2.5}),
+    ]
+    from cosray_backend.iotdb.client import IoTDBWriteError
+
+    with pytest.raises(IoTDBWriteError):
+        service.write_records("root.test.device", records)
 
 
 def test_table_service_builds_tablet_with_expected_shape():

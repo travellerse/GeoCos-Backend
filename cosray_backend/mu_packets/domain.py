@@ -248,6 +248,10 @@ class TimelinePacket:
         records: list[TimeSeriesRecord] = []
         event_count = len(self.events)
 
+        # Check if all events are missing both timestamp_ms and utc_ms
+        if all(event.timestamp_ms is None and event.utc_ms is None for event in self.events):
+            raise ValueError("All events are missing both timestamp_ms and utc_ms; cannot infer timestamps reliably.")
+
         for index, event in enumerate(self.events):
             timestamp = event.timestamp_ms or event.utc_ms or (self.events[0].utc_ms + index)
             measurements: dict[str, Any] = {
