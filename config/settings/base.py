@@ -322,6 +322,11 @@ IOTDB = {
     "NODE_URLS": _env_list("IOTDB_NODE_URLS"),
     "ENABLE_REDIRECTION": _env_bool("IOTDB_ENABLE_REDIRECTION", True),
     "ROOT_PATH": _env_str("IOTDB_ROOT_PATH", "root.cosray"),
+    "SQL_DIALECT": (_env_str("IOTDB_SQL_DIALECT", "tree").strip() or "tree").lower(),
+    "DATABASE": _env_str("IOTDB_DATABASE", "").strip() or None,
+    "ENABLE_COMPRESSION": _env_bool("IOTDB_ENABLE_COMPRESSION", False),
+    "CONNECTION_TIMEOUT_MS": (lambda value: value if value > 0 else None)(_env_int("IOTDB_CONNECTION_TIMEOUT_MS", 0)),
+    "TABLE_NAME_PREFIX": _env_str("IOTDB_TABLE_NAME_PREFIX", "").strip() or None,
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
