@@ -44,7 +44,7 @@ def _coerce_int(value: object, field_name: str, *, allow_negative: bool = True) 
     return coerced
 
 
-def _coerce_triplet(value: object, field_name: str) -> tuple[int, int, int] | None:
+def _coerce_triplet(value: object, field_name: str) -> tuple[int, ...] | None:
     if value is None:
         return None
     if isinstance(value, (bytes, bytearray)):
@@ -77,7 +77,7 @@ def _coerce_optional_bytes(value: object, field_name: str) -> tuple[int, ...] | 
     raise ValueError(f"Field '{field_name}' must be a byte sequence")
 
 
-def _format_triplet(triplet: tuple[int, int, int]) -> str:
+def _format_triplet(triplet: tuple[int, ...]) -> str:
     return "-".join(f"{byte:02X}" for byte in triplet)
 
 
@@ -87,8 +87,8 @@ def _format_bytes(values: Iterable[int]) -> str:
 
 @dataclass(frozen=True)
 class PacketMetadata:
-    header: tuple[int, int, int] | None
-    tail: tuple[int, int, int] | None
+    header: tuple[int, ...] | None
+    tail: tuple[int, ...] | None
     crc: int | None
     reserved: tuple[int, ...] | None
 
@@ -135,8 +135,8 @@ class MuonPacket:
     package_counter: int
     utc_ms: int
     events: tuple[MuonEvent, ...]
-    header: tuple[int, int, int] | None = None
-    tail: tuple[int, int, int] | None = None
+    header: tuple[int, ...] | None = None
+    tail: tuple[int, ...] | None = None
     crc: int | None = None
     reserved: tuple[int, ...] | None = None
 
@@ -246,8 +246,8 @@ class TimelineEvent:
 class TimelinePacket:
     package_counter: int
     events: tuple[TimelineEvent, ...]
-    header: tuple[int, int, int] | None = None
-    tail: tuple[int, int, int] | None = None
+    header: tuple[int, ...] | None = None
+    tail: tuple[int, ...] | None = None
     crc: int | None = None
     reserved: tuple[int, ...] | None = None
 
